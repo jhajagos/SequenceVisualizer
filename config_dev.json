@@ -1,0 +1,5 @@
+{
+  "database_connection_uri": "sqlite:///test.db",
+  "database_schema": null,
+  "storage_directory": "./"
+}
