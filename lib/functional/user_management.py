@@ -1,4 +1,5 @@
-from data_access.db_classes import DBClassFactory
+from data_access.db_tables import DataStoreFactory
+
 import datetime
 import hashlib
 import random
@@ -87,7 +88,7 @@ class UserManagement(object):
 class CustomAuthUserManagement(UserManagement):
 
     def __init__(self, connection, meta_data, secret):
-        self.class_factory = DBStoreClassFactory(connection, meta_data)
+        self.class_factory = DataStoreFactory(connection, meta_data)
         self.user = self.class_factory.create("users")
         self.user_auth = self.class_factory.create("user_auth_internal")
         self.secret = secret

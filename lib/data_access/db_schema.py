@@ -77,7 +77,7 @@ def build_database(connection_uri, schema, drop_all=False):
                          sa.Column("file_type_id", sa.ForeignKey("file_types.id"))
                          )
 
-        user_internal_auth = sa.Table("user_auth_internal", meta_data,
+        user_auth_internal = sa.Table("user_auth_internal", meta_data,
                                       sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
                                       sa.Column("user_id", sa.ForeignKey("users.id")),
                                       sa.Column("account_email_address", sa.String(256), nullable=False),
