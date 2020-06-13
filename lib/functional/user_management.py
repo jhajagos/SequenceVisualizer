@@ -85,6 +85,10 @@ class UserManagement(object):
         return self._set_password(username, password)
 
 
+def _compute_hash(string_to_hash):
+    return hashlib.sha256(string_to_hash.encode("utf8")).hexdigest()
+
+
 class CustomAuthUserManagement(UserManagement):
 
     def __init__(self, connection, meta_data, secret):
@@ -104,7 +108,7 @@ class CustomAuthUserManagement(UserManagement):
     def _validate_password(self, username, password):
         user_auth_obj = self._get_user_auth(username)
 
-        hashed_pwd = self._compute_hash(password)
+        hashed_pwd = _compute_hash(password)
         if user_auth_obj.sha == hashed_pwd:
             return True
         else:
@@ -131,7 +135,7 @@ class CustomAuthUserManagement(UserManagement):
 
         if "password" in kwargs_dict:
             password = kwargs_dict["password"]
-            sha = self._compute_hash(password)
+            sha = _compute_hash(password)
             kwargs_dict.pop("password")
             kwargs_dict["sha"] = sha
 
@@ -140,7 +144,7 @@ class CustomAuthUserManagement(UserManagement):
         return user_auth
 
     def _create_validation_code(self):
-        return self._compute_hash(self.secret + str(random.random()))
+        return _compute_hash(self.secret + str(random.random()))
 
     def _check_if_account_is_validated(self, username):
         user_auth_obj = self._get_user_auth(username)
@@ -167,13 +171,10 @@ class CustomAuthUserManagement(UserManagement):
         else:
             return False
 
-    def _compute_hash(self, string_to_hash):
-        return hashlib.sha256(string_to_hash.encode("utf8")).hexdigest()
-
     def _lock_account(self, username):
         user_auth_obj = self._get_user_auth(username)
-        id = user_auth_obj.id
-        self.user_auth.update_struct(id, {"is_account_locked": True})
+        user_auth_id = user_auth_obj.id
+        self.user_auth.update_struct(user_auth_id, {"is_account_locked": True})
 
     def _check_if_is_locked(self, username):
         user_auth_obj = self._get_user_auth(username)
@@ -208,7 +209,7 @@ class CustomAuthUserManagement(UserManagement):
 
                 if reset_code == user_auth_obj.reset_code:
 
-                    sha = self._compute_hash(new_password)
+                    sha = _compute_hash(new_password)
                     id = user_auth_obj.id
                     self.user_auth.update_struct(id, {"is_account_locked": False, "reset_code": None,
                                                       "reset_code_created_at": None, "sha": sha})
@@ -224,7 +225,7 @@ class CustomAuthUserManagement(UserManagement):
     def _set_password(self, username, password):
 
         user_auth_obj = self._get_user_auth(username)
-        id = user_auth_obj.id
-        sha = self._compute_hash(password)
+        user_auth_id = user_auth_obj.id
+        sha = _compute_hash(password)
 
-        self.user_auth.update_struct(id, {"sha": sha})
+        self.user_auth.update_struct(user_auth_id, {"sha": sha})

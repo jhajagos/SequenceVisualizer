@@ -1,5 +1,5 @@
 {
-  "database_connection_uri": "sqlite:///test.db",
-  "database_schema": null,
+  "database_connection_uri": "postgresql+psycopg2://postgres:d3velopMent@127.0.0.1:32768/postgres",
+  "database_schema": "public",
   "storage_directory": "./"
 }

@@ -18,7 +18,7 @@ def get_database_connection():
 
     return connection, meta_data
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def stub():
     return render_template("index.html")
 
@@ -26,6 +26,13 @@ def stub():
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop("username")
+    if "data_store_name" in session:
+        session.pop("data_store_name")
+    return redirect("/login")
 
 
 @app.route("/register_user", methods=["GET"])
@@ -84,6 +91,26 @@ def validate_user_registration():
         session["username"] = username
 
         return redirect("/")
+
+
+@app.route("/validate_login", methods=["GET", "POST"])
+def validate_login():
+
+    connection, metadata = get_database_connection()
+    user_auth_manager = UserAuthManagement(connection, metadata, secret=app.secret_key)
+
+    username = request.form["username"]
+    password = request.form["password"]
+
+    status, message = user_auth_manager.login_with_password(username, password)
+
+    if status:
+        session["username"] = username
+        return redirect("/")
+    else:
+        flash(message)
+        return redirect("/login")
+
 
 if __name__ == "__main__":
     app.debug = True
