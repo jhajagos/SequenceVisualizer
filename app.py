@@ -106,11 +106,15 @@ def validate_login():
 
     if status:
         session["username"] = username
+        flash("Logged in")
         return redirect("/")
     else:
         flash(message)
         return redirect("/login")
 
+@app.route("/file_upload", methods=["GET"])
+def file_upload():
+    return render_template("file_upload.html")
 
 if __name__ == "__main__":
     app.debug = True
